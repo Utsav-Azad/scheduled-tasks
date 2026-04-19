@@ -3,11 +3,15 @@ from twilio.rest import Client
 import os
 
 
-
 OWM_Endpoint = "http://api.openweathermap.org/data/2.5/forecast"
+
 api_key = os.getenv("OWM_API_KEY")
+
 account_sid = os.getenv("ACCOUNT_SID")
 auth_token = os.getenv("AUTH_TOKEN")
+
+FROM_NO = os.getenv("FROM_NO")
+TO_NO = os.getenv("TO_NO")
 
 
 weather_params = {
@@ -17,25 +21,35 @@ weather_params = {
     "cnt": 4,
 }
 
-
-
 response = requests.get(OWM_Endpoint, params=weather_params)
 response.raise_for_status()
+
 weather_data = response.json()
-# print(weather_data["list"][0]["weather"][0]["id"])
 
 will_rain = False
+
 for hour_data in weather_data["list"]:
-    condition_code = (hour_data["weather"][0]["id"])
+    condition_code = hour_data["weather"][0]["id"]
+
     if int(condition_code) < 700:
         will_rain = True
 
+
 if will_rain:
+
     client = Client(account_sid, auth_token)
-    message = client.messages \
-        .create(
-            body = "It is going to rain today. Remember to bring an Umbrella.",
-            from_= 'os.getenv("FROM_NO"),
-            to='os.getenv("TO_NO"),
+
+    message = client.messages.create(
+
+        body="It is going to rain today. Remember to bring an Umbrella.",
+
+        from_=FROM_NO,
+
+        to=TO_NO,
     )
+
     print(message.status)
+
+else:
+
+    print("No rain expected")
