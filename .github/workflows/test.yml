@@ -1,7 +1,7 @@
 name: Test Setup
 
 on:
-  workflow_dispatch:  # Manual trigger only
+  workflow_dispatch:   # Manual trigger
 
 jobs:
   test:
@@ -21,33 +21,61 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # 🔐 Check required secrets
       - name: Check secrets are configured
         env:
-          MY_EMAIL: ${{ secrets.MY_EMAIL }}
-          MY_PASSWORD: ${{ secrets.MY_PASSWORD }}
+          ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          FROM_NO: ${{ secrets.FROM_NO }}
+          TO_NO: ${{ secrets.TO_NO }}
+          OWM_API_KEY: ${{ secrets.OWM_API_KEY }}
+
         run: |
-          if [ -z "$MY_EMAIL" ]; then
-            echo "MY_EMAIL secret is not set!"
-            echo "Go to Settings > Secrets > Actions and add it."
+
+          echo "Checking secrets..."
+
+          if [ -z "$ACCOUNT_SID" ]; then
+            echo "ACCOUNT_SID secret is not set!"
             exit 1
           else
-            echo "MY_EMAIL is configured"
+            echo "ACCOUNT_SID OK"
           fi
 
-          if [ -z "$MY_PASSWORD" ]; then
-            echo "MY_PASSWORD secret is not set!"
-            echo "Go to Settings > Secrets > Actions and add it."
+          if [ -z "$AUTH_TOKEN" ]; then
+            echo "AUTH_TOKEN secret is not set!"
             exit 1
           else
-            echo "MY_PASSWORD is configured"
+            echo "AUTH_TOKEN OK"
+          fi
+
+          if [ -z "$FROM_NO" ]; then
+            echo "FROM_NO secret is not set!"
+            exit 1
+          else
+            echo "FROM_NO OK"
+          fi
+
+          if [ -z "$TO_NO" ]; then
+            echo "TO_NO secret is not set!"
+            exit 1
+          else
+            echo "TO_NO OK"
+          fi
+
+          if [ -z "$OWM_API_KEY" ]; then
+            echo "OWM_API_KEY secret is not set!"
+            exit 1
+          else
+            echo "OWM_API_KEY OK"
           fi
 
           echo ""
           echo "All secrets are configured!"
 
+      # 📂 Check files
       - name: Check required files exist
         run: |
-          echo "Checking for required files..."
+          echo "Checking required files..."
 
           if [ -f "main.py" ]; then
             echo "main.py found"
@@ -63,23 +91,18 @@ jobs:
             exit 1
           fi
 
-          if [ -f "birthdays.csv" ]; then
-            echo "birthdays.csv found"
-          else
-            echo "birthdays.csv not found!"
-            exit 1
-          fi
-
           echo ""
           echo "All required files found!"
 
+      # 🐍 Python syntax test
       - name: Test Python syntax
-        run: python -m py_compile main.py && echo "Python syntax OK"
+        run: python -m py_compile main.py
 
+      # 🎉 Success message
       - name: Success
         run: |
           echo ""
-          echo "========================================"
-          echo "  All checks passed!"
-          echo "  Your setup is ready to go."
-          echo "========================================"
+          echo "======================================="
+          echo " All checks passed!"
+          echo " GitHub Actions setup is working"
+          echo "======================================="
