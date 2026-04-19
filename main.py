@@ -5,9 +5,9 @@ import os
 
 
 OWM_Endpoint = "http://api.openweathermap.org/data/2.5/forecast"
-api_key = os.environ.get("OWM_API_KEY")
-account_sid = os.environ.get("ACCOUNT_SID")
-auth_token = os.environ.get("AUTH_TOKEN")
+api_key = os.getenv("OWM_API_KEY")
+account_sid = os.getenv("ACCOUNT_SID")
+auth_token = os.getenv("AUTH_TOKEN")
 
 
 weather_params = {
@@ -35,7 +35,7 @@ if will_rain:
     message = client.messages \
         .create(
             body = "It is going to rain today. Remember to bring an Umbrella.",
-            from_= 'os.environ.get("FROM_NO"),
-            to='os.environ.get("TO_NO"),
+            from_= 'os.getenv("FROM_NO"),
+            to='os.getenv("TO_NO"),
     )
     print(message.status)
